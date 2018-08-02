@@ -1,8 +1,8 @@
 FC=mpif90
 FFLAGS=
-LDPATH=-L/Users/dawson/Documents/NTPoly/Complex/Build/lib
+LDPATH=-L${NTPolyPath}/lib
 LDFLAGS=-lNTPoly -fopenmp -llapack
-INCLUDES=-I/Users/dawson/Documents/NTPoly/Complex/Build/include
+INCLUDES=-I${NTPolyPath}/include
 EXE=IdempotentSub
 BUILD=Build
 PY=python3
