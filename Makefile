@@ -27,9 +27,19 @@ $(BUILD)/IdempotencyModule.o $(BUILD)/IdempotencyModule.mod: \
 clean:
 	rm $(BUILD)/*.o $(BUILD)/$(EXE)
 
-test:
-	$(PY) Tests/reference.py 8 Tests/Data/input_mul.yaml Tests/values-python.txt
-	mpirun -np 1 $(BUILD)/$(EXE) --subset Tests/Data/input_mul.yaml \
+test: test1 test2
+
+test1:
+	$(PY) Tests/reference.py 8 Tests/input_mul.yaml Tests/values-python.txt
+	mpirun -np 1 $(BUILD)/$(EXE) --subset Tests/input_mul.yaml \
+	  --density Tests/DMat.mtx --overlap Tests/SMat.mtx \
+		--threshold 1e-10 --convergence_threshold 1e-5 \
+		--output Tests/values-fortran.txt
+	$(PY) Tests/verify.py Tests/values-fortran.txt Tests/values-python.txt 1e-5
+
+test2:
+	$(PY) Tests/reference.py 8 Tests/input_mul.yaml Tests/values-python.txt
+	mpirun -np 2 $(BUILD)/$(EXE) --subset Tests/input_mul.yaml \
 	  --density Tests/DMat.mtx --overlap Tests/SMat.mtx \
 		--threshold 1e-10 --convergence_threshold 1e-5 \
 		--output Tests/values-fortran.txt
