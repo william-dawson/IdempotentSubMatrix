@@ -5,6 +5,7 @@ LDFLAGS=-lNTPoly -fopenmp -llapack
 INCLUDES=-I/Users/dawson/Documents/NTPoly/Complex/Build/include
 EXE=IdempotentSub
 BUILD=Build
+PY=python3
 
 ALL: $(BUILD)/$(EXE)
 
@@ -27,7 +28,9 @@ clean:
 	rm $(BUILD)/*.o $(BUILD)/$(EXE)
 
 test:
-	python3 Tests/reference.py 8 Tests/Data/input_mul.yaml
+	$(PY) Tests/reference.py 8 Tests/Data/input_mul.yaml Tests/values-python.txt
 	mpirun -np 1 $(BUILD)/$(EXE) --subset Tests/Data/input_mul.yaml \
 	  --density Tests/DMat.mtx --overlap Tests/SMat.mtx \
-		--threshold 1e-5 --convergence_threshold 1e-3
+		--threshold 1e-10 --convergence_threshold 1e-5 \
+		--output Tests/values-fortran.txt
+	$(PY) Tests/verify.py Tests/values-fortran.txt Tests/values-python.txt 1e-5
