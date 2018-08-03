@@ -1,31 +1,42 @@
+# Modify
 FC=mpif90
-FFLAGS=
-LDPATH=-L${NTPolyPath}/lib
+PY=python3
 LDFLAGS=-lNTPoly -fopenmp -llapack
+FFLAGS=
+# You can specify NTPolyPath as an environment variable
+LDPATH=-L${NTPolyPath}/lib
 INCLUDES=-I${NTPolyPath}/include
+
+################################################################################
 EXE=IdempotentSub
 BUILD=Build
-PY=python3
 
 ALL: $(BUILD)/$(EXE)
 
-OBJECTS=$(BUILD)/SetModule.o $(BUILD)/IdempotencyModule.o $(BUILD)/main.o
+OBJECTS=$(BUILD)/main.o $(BUILD)/SetModule.o $(BUILD)/IdempotencyModule.o
 
 $(BUILD)/$(EXE): $(OBJECTS)
 	$(FC) $^ -o $@ $(LDPATH) $(LDFLAGS)
 
-$(BUILD)/main.o: main.f90 $(BUILD)/SetModule.o $(BUILD)/IdempotencyModule.o
+$(BUILD)/%.o: %.f90
 	$(FC) -c $< -o $@ $(INCLUDES) -I$(BUILD)
 
-$(BUILD)/SetModule.o $(BUILD)/SetModule.mod: SetModule.f90
-	$(FC) -c $< -o $@ $(INCLUDES) -J$(BUILD)
+$(BUILD)/main.o: $(BUILD)/IdempotencyModule.o $(BUILD)/SetModule.o 
+$(BUILD)/IdempotencyModule.o: $(BUILD)/SetModule.o
+#
+# $(BUILD)/main.o: main.f90 $(BUILD)/SetModule.o $(BUILD)/IdempotencyModule.o
+# 	$(FC) -c $< -o $@ $(INCLUDES) -I$(BUILD)
+#
+# $(BUILD)/SetModule.o $(BUILD)/SetModule.mod: SetModule.f90
+# 	$(FC) -c $< -o $@ $(INCLUDES) -J$(BUILD)
+#
+# $(BUILD)/IdempotencyModule.o $(BUILD)/IdempotencyModule.mod: \
+#     IdempotencyModule.f90 $(BUILD)/SetModule.o
+# 	$(FC) -c $< -o $@ $(INCLUDES) -J$(BUILD)
 
-$(BUILD)/IdempotencyModule.o $(BUILD)/IdempotencyModule.mod: \
-    IdempotencyModule.f90 $(BUILD)/SetModule.o
-	$(FC) -c $< -o $@ $(INCLUDES) -J$(BUILD)
-
+################################################################################
 clean:
-	rm $(BUILD)/*.o $(BUILD)/$(EXE)
+	rm $(BUILD)/*.o $(BUILD)/$(EXE) $(BUILD)/*.mod
 
 test: test1 test2
 
