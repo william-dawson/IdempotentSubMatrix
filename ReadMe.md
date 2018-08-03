@@ -5,7 +5,7 @@ check if the submatrix of S^-1*D defined by those indices is idempotent.
 
 ## Usage
 
-Modify the the variables at the top of the makefile, and type make in the
+Modify the the variables at the top of the `make.inc` file, and type make in the
 base directory. The variable `${NTPolyPath}` may be specified as an
 environment variable, and it should point to the Build directory of NTPoly.
 
